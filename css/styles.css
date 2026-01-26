@@ -1292,24 +1292,83 @@ body {
    SECCIÓN CONTACTO
    ======================================== */
 .contacto-section {
-    background-color: var(--color-secondary);
+    background-color: var(--color-gris-claro);
 }
 
 .contacto-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: var(--spacing-lg);
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-xl);
     margin-top: var(--spacing-xl);
 }
 
+.contacto-form-wrapper {
+    background: var(--color-blanco);
+    border-radius: 12px;
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+}
+
+.contacto-form-wrapper h3 {
+    font-size: var(--font-size-lg);
+    color: var(--color-gris-oscuro);
+    margin-bottom: var(--spacing-md);
+}
+
+.contacto-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: var(--spacing-sm);
+    font-weight: 600;
+    color: var(--color-gris-oscuro);
+    font-size: var(--font-size-sm);
+}
+
+.form-group input,
+.form-group textarea {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-base);
+    font-family: var(--font-primary);
+    font-size: var(--font-size-base);
+    color: var(--color-gris-oscuro);
+    background-color: var(--color-blanco);
+    transition: var(--transition);
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--color-verde);
+    box-shadow: 0 0 0 3px rgba(111, 191, 147, 0.1);
+}
+
+.contacto-form button {
+    margin-top: var(--spacing-md);
+}
+
+.contacto-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
 .contacto-card {
-    background: var(--color-surface);
-    border-radius: var(--radius-lg);
+    background: var(--color-blanco);
+    border-radius: 12px;
     padding: var(--spacing-lg);
     text-align: center;
     box-shadow: var(--shadow-sm);
     transition: var(--transition);
-    border: 1px solid var(--color-card-border);
 }
 
 .contacto-card:hover {
@@ -1318,33 +1377,31 @@ body {
 }
 
 .contacto-card i {
-    font-size: var(--font-size-xl);
-    color: var(--color-primary);
+    font-size: 36px;
+    color: var(--color-verde);
     margin-bottom: var(--spacing-md);
 }
 
 .contacto-card h3 {
     font-size: var(--font-size-md);
-    color: var(--color-text);
+    color: var(--color-gris-oscuro);
     margin-bottom: var(--spacing-sm);
-    font-weight: var(--font-weight-semibold);
-    line-height: var(--line-height-tight);
 }
 
 .contacto-card p {
-    color: var(--color-text-secondary);
-    line-height: var(--line-height-normal);
+    color: var(--color-gris-oscuro);
+    opacity: 0.8;
 }
 
 .contacto-card a {
-    color: var(--color-primary);
+    color: var(--color-verde);
     text-decoration: none;
-    font-weight: var(--font-weight-semibold);
+    font-weight: 600;
     transition: var(--transition);
 }
 
 .contacto-card a:hover {
-    color: var(--color-primary-hover);
+    color: var(--color-verde-oscuro);
 }
 
 .contacto-card a:focus-visible {
@@ -1446,10 +1503,10 @@ body {
    RESPONSIVE DESIGN
    ======================================== */
 @media (max-width: 768px) {
-    .nav-content {
-        flex-direction: column;
-        gap: var(--spacing-md);
+    .contacto-grid {
+        grid-template-columns: 1fr;
     }
+}
 
     .nav-menu {
         gap: var(--spacing-md);
@@ -1489,7 +1546,7 @@ body {
         width: 50px;
         height: 50px;
     }
-}
+
 
 @media (max-width: 480px) {
     .container {
