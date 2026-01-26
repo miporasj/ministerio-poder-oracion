@@ -22,6 +22,7 @@
   --color-red-500: rgba(192, 21, 47, 1);
   --color-orange-400: rgba(230, 129, 97, 1);
   --color-orange-500: rgba(168, 75, 47, 1);
+  --color-verde-oscuro: #5a9e7f;
 
   /* RGB versions for opacity control */
   --color-brown-600-rgb: 94, 82, 64;
@@ -1723,3 +1724,158 @@ body {
         font-size: 24px;
     }
 }
+
+/* ========================================
+   SECCIÓN ESCÚCHANOS EN VIVO
+   ======================================== */
+.escuchanos-section {
+    background: linear-gradient(135deg, var(--color-verde) 0%, var(--color-verde-oscuro) 100%);
+    color: white;
+    padding: 60px 20px;
+}
+
+.escuchanos-section .section-title {
+    color: white;
+    font-size: 2.5rem;
+}
+
+.escuchanos-section .section-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.transmision-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin: 40px 0;
+}
+
+.transmision-card {
+    background: white;
+    color: var(--color-gris-oscuro);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: var(--shadow-lg);
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+}
+
+.transmision-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 48px rgba(111, 191, 147, 0.3);
+}
+
+.transmision-icon {
+    font-size: 48px;
+    color: var(--color-verde);
+    margin-bottom: 20px;
+}
+
+.transmision-icon.youtube-icon {
+    color: #FF0000;
+}
+
+.transmision-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: var(--color-gris-oscuro);
+}
+
+.transmision-card p {
+    color: var(--color-gris-oscuro);
+    opacity: 0.8;
+    margin-bottom: 20px;
+}
+
+.player-zeno {
+    margin: 20px 0;
+    padding: 20px;
+    background: var(--color-gris-claro);
+    border-radius: 8px;
+}
+
+.player-zeno audio {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.youtube-embed {
+    margin: 20px 0;
+    padding: 30px;
+    background: var(--color-gris-claro);
+    border-radius: 8px;
+    text-align: center;
+}
+
+.btn-primary-outline {
+    background: transparent;
+    border: 2px solid var(--color-verde);
+    color: var(--color-verde);
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-primary-outline:hover {
+    background: var(--color-verde);
+    color: white;
+}
+
+.zeno-widget-container {
+    margin-top: 50px;
+    padding-top: 30px;
+    border-top: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.zeno-links {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.zeno-link {
+    background: white;
+    color: var(--color-verde);
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+}
+
+.zeno-link:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-md);
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .transmision-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .escuchanos-section .section-title {
+        font-size: 1.8rem;
+    }
+    
+    .zeno-links {
+        flex-direction: column;
+    }
+    
+    .zeno-link {
+        justify-content: center;
+    }
+}
+
