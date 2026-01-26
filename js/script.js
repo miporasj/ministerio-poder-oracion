@@ -97,10 +97,7 @@ function obtenerVersiculo() {
     const mes = hoy.getMonth();
     const dia = hoy.getDate();
     
-    // Crear una semilla basada en la fecha
     const semilla = año * 10000 + mes * 100 + dia;
-    
-    // Usar la semilla para obtener un índice consistente
     const indice = semilla % versiculos.length;
     
     return versiculos[indice];
@@ -123,7 +120,6 @@ function actualizarVersiculo() {
     const elementoReferencia = document.getElementById('versiculo-referencia');
     
     if (elementoTexto && elementoReferencia) {
-        // Agregar animación de fade out
         elementoTexto.style.opacity = '0';
         elementoReferencia.style.opacity = '0';
         
@@ -131,39 +127,11 @@ function actualizarVersiculo() {
             elementoTexto.textContent = `"${versiculo.texto}"`;
             elementoReferencia.textContent = versiculo.referencia;
             
-            // Fade in
             elementoTexto.style.opacity = '1';
             elementoReferencia.style.opacity = '1';
         }, 300);
     }
 }
-
-// ========================================
-// INICIALIZACIÓN AL CARGAR LA PÁGINA
-// ========================================
-document.addEventListener('DOMContentLoaded', function() {
-    // Cargar el versículo del día al cargar la página
-    const versiculo = obtenerVersiculo();
-    const elementoTexto = document.getElementById('versiculo-texto');
-    const elementoReferencia = document.getElementById('versiculo-referencia');
-    
-    if (elementoTexto && elementoReferencia) {
-        elementoTexto.textContent = `"${versiculo.texto}"`;
-        elementoReferencia.textContent = versiculo.referencia;
-    }
-    
-    // Agregar evento al botón de nuevo versículo
-    const btnNuevoVersiculo = document.getElementById('btn-nuevo-versiculo');
-    if (btnNuevoVersiculo) {
-        btnNuevoVersiculo.addEventListener('click', actualizarVersiculo);
-    }
-    
-    // Agregar suavidad en transiciones
-    agregarTransiciones();
-    
-    // Detectar scroll para efectos visuales
-    agregarEfectosScroll();
-});
 
 // ========================================
 // EFECTOS VISUALES
@@ -188,7 +156,6 @@ function agregarEfectosScroll() {
         '.horario-card, .red-card, .contacto-card, .versiculo-card'
     );
     
-    // Observer para animaciones al entrar en viewport
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -210,17 +177,79 @@ function agregarEfectosScroll() {
 }
 
 // ========================================
-// FUNCIONES AUXILIARES
+// YOUTUBE LIVE DETECTION
 // ========================================
 
-/**
- * Suaviza el scroll a elementos con anclas
- */
+const YOUTUBE_CHANNEL_ID = "UC77XbHPEr4zjorRUvh0LF_w";
+
+function checkYouTubeLive() {
+    try {
+        const embedUrl = `https://www.youtube.com/embed/live_stream?channel=${YOUTUBE_CHANNEL_ID}`;
+        const iframe = document.getElementById('youtube-live-iframe');
+        
+        if (iframe) {
+            iframe.src = embedUrl;
+            console.log('✅ YouTube Live cargado correctamente');
+        }
+    } catch (error) {
+        console.log('⚠️ Error al cargar YouTube Live:', error);
+    }
+}
+
+// ========================================
+// INICIALIZACIÓN AL CARGAR LA PÁGINA
+// ========================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Cargar versículo del día
+    const versiculo = obtenerVersiculo();
+    const elementoTexto = document.getElementById('versiculo-texto');
+    const elementoReferencia = document.getElementById('versiculo-referencia');
+    
+    if (elementoTexto && elementoReferencia) {
+        elementoTexto.textContent = `"${versiculo.texto}"`;
+        elementoReferencia.textContent = versiculo.referencia;
+    }
+    
+    // Evento botón nuevo versículo
+    const btnNuevoVersiculo = document.getElementById('btn-nuevo-versiculo');
+    if (btnNuevoVersiculo) {
+        btnNuevoVersiculo.addEventListener('click', actualizarVersiculo);
+    }
+    
+    // Agregar efectos visuales
+    agregarTransiciones();
+    agregarEfectosScroll();
+    
+    // Cargar YouTube Live
+    checkYouTubeLive();
+    
+    console.log('✨ Página cargada correctamente');
+    console.log('🙏 Ministerio Poder de la Oración - San Juan');
+});
+
+// ========================================
+// SCROLL EFFECTS
+// ========================================
+
+window.addEventListener('scroll', function() {
+    const navbar = document.querySelector('.navbar');
+    
+    if (window.scrollY > 50) {
+        navbar.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.15)';
+    } else {
+        navbar.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+    }
+});
+
+// ========================================
+// SMOOTH SCROLL ANCHORS
+// ========================================
+
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         const href = this.getAttribute('href');
         
-        // Permitir comportamiento normal si es el header
         if (href !== '#' && document.querySelector(href)) {
             e.preventDefault();
             const elemento = document.querySelector(href);
@@ -232,57 +261,5 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// ========================================
-// EFECTO NAVBAR AL SCROLL
-// ========================================
-window.addEventListener('scroll', function() {
-    const navbar = document.querySelector('.navbar');
-    
-    if (window.scrollY > 50) {
-        navbar.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.15)';
-    } else {
-        navbar.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
-    }
-});
-
-console.log('✨ Página cargada correctamente');
-console.log('🙏 Ministerio Poder de la Oración - San Juan');
-
-// ========================================
-// DETECCIÓN DE YOUTUBE LIVE
-// ========================================
-
-// Tu Channel ID aquí (ej: UCxxxxxxxxxxxxxxxxxxxxxx)
-const YOUTUBE_CHANNEL_ID = "UC77XbHPEr4zjorRUvh0LF_w";
-
-// Función para obtener videos en vivo
-async function checkYouTubeLive() {
-    try {
-        // API de YouTube Data v3 (sin API key, busca canales públicos)
-        const response = await fetch(
-            `https://www.youtube.com/results?search_query=channel%3A${YOUTUBE_CHANNEL_ID}%20is%3Alive`,
-            { method: 'GET', mode: 'no-cors' }
-        );
-        
-        // Alternativa: usar RSS (sin autenticación)
-        const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${YOUTUBE_CHANNEL_ID}`;
-        
-        // Para obtener videos en vivo, usa esta URL de widget:
-        const embedUrl = `https://www.youtube.com/embed/live_stream?channel=${YOUTUBE_CHANNEL_ID}`;
-        
-        const iframe = document.getElementById('youtube-live-iframe');
-        if (iframe) {
-            iframe.src = embedUrl;
-        }
-        
-        console.log('✅ YouTube Live cargado correctamente');
-    } catch (error) {
-        console.log('⚠️ No hay transmisión en vivo ahora:', error);
-    }
-}
-
-// Ejecutar cuando carga la página
-document.addEventListener('DOMContentLoaded', checkYouTubeLive);
-
-// Verificar cada 60 segundos si hay transmisión
+// Verificar YouTube Live cada 60 segundos
 setInterval(checkYouTubeLive, 60000);
