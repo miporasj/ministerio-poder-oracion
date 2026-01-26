@@ -177,24 +177,95 @@ function agregarEfectosScroll() {
 }
 
 // ========================================
-// YOUTUBE LIVE DETECTION
+// YOUTUBE LIVE STATUS
 // ========================================
 
 const YOUTUBE_CHANNEL_ID = "UC77XbHPEr4zjorRUvh0LF_w";
 
-function checkYouTubeLive() {
+async function checkYouTubeLive() {
     try {
-        const embedUrl = `https://www.youtube.com/embed/live_stream?channel=${YOUTUBE_CHANNEL_ID}`;
-        const iframe = document.getElementById('youtube-live-iframe');
+        // Usar la API de YouTube (requiere API key, pero mostraremos alternativa sin ella)
+        const statusContainer = document.getElementById('youtube-status');
         
-        if (iframe) {
-            iframe.src = embedUrl;
-            console.log('✅ YouTube Live cargado correctamente');
+        if (statusContainer) {
+            // Mostrar mensaje de verificación
+            statusContainer.innerHTML = `
+                <div style="text-align: center; padding: 30px;">
+                    <p style="color: var(--color-gris-oscuro); margin-bottom: 15px;">
+                        <i class="fas fa-spinner" style="animation: spin 1s linear infinite; color: var(--color-verde); font-size: 24px;"></i>
+                    </p>
+                    <p style="font-size: 14px; color: var(--color-gris-oscuro);">Verificando si estamos en vivo...</p>
+                </div>
+            `;
+            
+            // Hacer petición a YouTube
+            const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${YOUTUBE_CHANNEL_ID}`;
+            
+            const response = await fetch(rssUrl);
+            const xmlText = await response.text();
+            
+            // Analizar el feed para buscar videos recientes
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+            const entries = xmlDoc.getElementsByTagName('entry');
+            
+            if (entries.length > 0) {
+                const latestVideo = entries[0];
+                const title = latestVideo.getElementsByTagName('title')[0].textContent;
+                const videoId = latestVideo.getElementsByTagName('yt:videoId')[0].textContent;
+                
+                // Mostrar video
+                statusContainer.innerHTML = `
+                    <div style="width: 100%; padding-top: 56.25%; position: relative; background: #000; margin: 20px 0;">
+                        <iframe
+                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
+                            src="https://www.youtube.com/embed/${videoId}"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                    <p style="text-align: center; font-size: 12px; color: var(--color-verde); margin-top: 10px;">
+                        <i class="fas fa-circle" style="animation: pulse-red 1s infinite;"></i> EN VIVO
+                    </p>
+                `;
+                
+                console.log('✅ Video encontrado:', title);
+            } else {
+                statusContainer.innerHTML = `
+                    <p style="text-align: center; color: var(--color-gris-oscuro); margin: 30px 0;">
+                        <i class="fas fa-play-circle" style="font-size: 48px; color: var(--color-verde);"></i>
+                    </p>
+                    <p style="text-align: center; font-size: 14px; color: var(--color-gris-oscuro);">
+                        Los servicios en vivo aparecerán aquí cuando estemos transmitiendo
+                    </p>
+                `;
+            }
         }
     } catch (error) {
-        console.log('⚠️ Error al cargar YouTube Live:', error);
+        console.log('⚠️ No se pudo verificar YouTube Live:', error);
+        
+        const statusContainer = document.getElementById('youtube-status');
+        if (statusContainer) {
+            statusContainer.innerHTML = `
+                <p style="text-align: center; color: var(--color-gris-oscuro); margin: 30px 0;">
+                    <i class="fas fa-play-circle" style="font-size: 48px; color: var(--color-verde);"></i>
+                </p>
+                <p style="text-align: center; font-size: 14px; color: var(--color-gris-oscuro);">
+                    Los servicios en vivo aparecerán aquí cuando estemos transmitiendo
+                </p>
+            `;
+        }
     }
 }
+
+// Ejecutar cuando carga la página
+document.addEventListener('DOMContentLoaded', () => {
+    checkYouTubeLive();
+});
+
+// Verificar cada 60 segundos
+setInterval(checkYouTubeLive, 60000);
+
 
 // ========================================
 // INICIALIZACIÓN AL CARGAR LA PÁGINA
