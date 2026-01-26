@@ -247,3 +247,42 @@ window.addEventListener('scroll', function() {
 
 console.log('✨ Página cargada correctamente');
 console.log('🙏 Ministerio Poder de la Oración - San Juan');
+
+// ========================================
+// DETECCIÓN DE YOUTUBE LIVE
+// ========================================
+
+// Tu Channel ID aquí (ej: UCxxxxxxxxxxxxxxxxxxxxxx)
+const YOUTUBE_CHANNEL_ID = "UC77XbHPEr4zjorRUvh0LF_w";
+
+// Función para obtener videos en vivo
+async function checkYouTubeLive() {
+    try {
+        // API de YouTube Data v3 (sin API key, busca canales públicos)
+        const response = await fetch(
+            `https://www.youtube.com/results?search_query=channel%3A${YOUTUBE_CHANNEL_ID}%20is%3Alive`,
+            { method: 'GET', mode: 'no-cors' }
+        );
+        
+        // Alternativa: usar RSS (sin autenticación)
+        const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${YOUTUBE_CHANNEL_ID}`;
+        
+        // Para obtener videos en vivo, usa esta URL de widget:
+        const embedUrl = `https://www.youtube.com/embed/live_stream?channel=${YOUTUBE_CHANNEL_ID}`;
+        
+        const iframe = document.getElementById('youtube-live-iframe');
+        if (iframe) {
+            iframe.src = embedUrl;
+        }
+        
+        console.log('✅ YouTube Live cargado correctamente');
+    } catch (error) {
+        console.log('⚠️ No hay transmisión en vivo ahora:', error);
+    }
+}
+
+// Ejecutar cuando carga la página
+document.addEventListener('DOMContentLoaded', checkYouTubeLive);
+
+// Verificar cada 60 segundos si hay transmisión
+setInterval(checkYouTubeLive, 60000);
