@@ -56,52 +56,6 @@ function actualizarVersiculo() {
 }
 
 // ========================================
-// YOUTUBE LIVE - FUNCIÓN PRINCIPAL
-// ========================================
-const YOUTUBE_CHANNEL_ID = "UC77XbHPEr4zjorRUvh0LF_w";
-
-async function checkYouTubeLive() {
-    const statusContainer = document.getElementById('youtube-status');
-    
-    if (!statusContainer) return;
-    
-    try {
-        const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${YOUTUBE_CHANNEL_ID}`;
-        const response = await fetch(rssUrl);
-        const xmlText = await response.text();
-        
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-        const entries = xmlDoc.getElementsByTagName('entry');
-        
-        if (entries.length > 0) {
-            const latestVideo = entries[0];
-            const videoIdElement = latestVideo.getElementsByTagName('yt:videoId')[0];
-            
-            if (videoIdElement) {
-                const videoId = videoIdElement.textContent;
-                statusContainer.innerHTML = `
-                    <div style="width: 100%; padding-top: 56.25%; position: relative; background: #000; margin: 20px 0;">
-                        <iframe
-                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
-                            src="https://www.youtube.com/embed/${videoId}"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen>
-                        </iframe>
-                    </div>
-                    <p style="text-align: center; font-size: 12px; color: var(--color-verde); margin-top: 10px;">
-                        <i class="fas fa-circle" style="animation: pulse-red 1s infinite;"></i> ÚLTIMO VIDEO
-                    </p>
-                `;
-                console.log('✅ Video cargado:', videoId);
-            }
-        }
-    } catch (error) {
-        console.log('⚠️ Error al cargar YouTube:', error);
-    }
-}
-
-// ========================================
 // EFECTOS VISUALES
 // ========================================
 function agregarTransiciones() {
@@ -130,10 +84,11 @@ function agregarEfectosScroll() {
 }
 
 // ========================================
-// INICIALIZACIÓN - UNA SOLA VEZ
+// INICIALIZACIÓN
 // ========================================
 document.addEventListener('DOMContentLoaded', function() {
     console.log('✨ Página cargada correctamente');
+    console.log('🙏 Ministerio Poder de la Oración - San Juan');
     
     // Versículos
     const versiculo = obtenerVersiculo();
@@ -153,10 +108,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Efectos
     agregarTransiciones();
     agregarEfectosScroll();
-    
-    // YouTube Live
-    checkYouTubeLive();
-    setInterval(checkYouTubeLive, 60000);
 });
 
 // ========================================
