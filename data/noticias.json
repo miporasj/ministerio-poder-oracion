@@ -1,0 +1,52 @@
+{
+  "noticias": [
+    {
+      "id": 1,
+      "fecha": "28 de Enero, 2026",
+      "titulo": "Bautismo Especial este Domingo",
+      "descripcion": "Te invitamos a participar de nuestro bautismo especial este domingo a las 20:00 hs. Será un momento glorioso para celebrar las decisiones de fe de nuestros hermanos.",
+      "icono": "✝️",
+      "enlace": "#horarios"
+    },
+    {
+      "id": 2,
+      "fecha": "25 de Enero, 2026",
+      "titulo": "Retiro Espiritual Confirmado",
+      "descripcion": "¡El retiro espiritual de nuestro ministerio ha sido confirmado! Será una experiencia única de comunión, oración y renovación espiritual junto a toda la comunidad.",
+      "icono": "🙏",
+      "enlace": "#contacto"
+    },
+    {
+      "id": 3,
+      "fecha": "20 de Enero, 2026",
+      "titulo": "Escúchanos 24/7 en Zeno.FM",
+      "descripcion": "Ahora puedes escuchar nuestras transmisiones en vivo a través de Zeno.FM. Conectate en cualquier momento y disfruta de nuestra programación de alabanza y predicación.",
+      "icono": "🎵",
+      "enlace": "#escuchanos"
+    },
+    {
+      "id": 4,
+      "fecha": "18 de Enero, 2026",
+      "titulo": "Grupos de Oración en Familia",
+      "descripcion": "Estamos iniciando grupos de oración en familia. Es una oportunidad para crecer espiritualmente con tu familia y comunidad. ¡Únete a nosotros!",
+      "icono": "👨‍👩‍👧‍👦",
+      "enlace": "#horarios"
+    },
+    {
+      "id": 5,
+      "fecha": "15 de Enero, 2026",
+      "titulo": "Testimonio de Sanidad",
+      "descripcion": "Damos gloria a Dios por la sanidad otorgada a uno de nuestros hermanos. Un milagro más que testifica el poder y la misericordia de nuestro Señor.",
+      "icono": "❤️",
+      "enlace": "#contacto"
+    },
+    {
+      "id": 6,
+      "fecha": "10 de Enero, 2026",
+      "titulo": "Discipulado de Jóvenes",
+      "descripcion": "Iniciamos un nuevo programa de discipulado para jóvenes. Será una oportunidad para crecer en fe, conocer la Biblia y construir amistades cristianas.",
+      "icono": "📚",
+      "enlace": "#horarios"
+    }
+  ]
+}

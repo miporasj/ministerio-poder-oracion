@@ -1,0 +1,44 @@
+{
+  "predicas": [
+    {
+      "id": 1,
+      "titulo": "La Acción revela al Buen Hijo",
+      "predicador": "Pastor Damian Nieto",
+      "fecha": "04 de Noviembre, 2025",
+      "videoId": "j3NlYYEFPRo",
+      "categoria": "Revelación"
+    },
+    {
+      "id": 2,
+      "titulo": "La Paternidad revela lo que el Temor Oculta",
+      "predicador": "Pastor Damian Nieto",
+      "fecha": "04 de Octubre, 2025",
+      "videoId": "b2A41iA_4CI",
+      "categoria": "Paternidad"
+    },
+    {
+      "id": 3,
+      "titulo": "Lo oculto se revela a través de la Paternidad",
+      "predicador": "Pastor Damian Nieto",
+      "fecha": "22 de Septiembre, 2025",
+      "videoId": "PGbX4KchaqE",
+      "categoria": "Paternidad y Revelación"
+    },
+    {
+      "id": 4,
+      "titulo": "Barro en manos del Alfarero",
+      "predicador": "Pastora Mercedes de Nieto",
+      "fecha": "11 de Agosto, 2025",
+      "videoId": "iVHeaqfsPMM",
+      "categoria": "Construir"
+    },
+    {
+      "id": 5,
+      "titulo": "Todo es nuevo en Cristo",
+      "predicador": "Pastora Mercedes de Nieto",
+      "fecha": "04 de Agosto, 2025",
+      "videoId": "4wEoWUgEFKk",
+      "categoria": "Transformación"
+    }
+  ]
+}

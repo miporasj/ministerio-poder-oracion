@@ -56,16 +56,117 @@ function actualizarVersiculo() {
 }
 
 // ========================================
+// FUNCIONES NOTICIAS (desde JSON con imágenes)
+// ========================================
+async function cargarNoticias() {
+    const container = document.getElementById('noticias-container');
+    
+    if (!container) return;
+    
+    try {
+        // Cargar noticias desde data/noticias.json
+        const response = await fetch('data/noticias.json');
+        const data = await response.json();
+        const noticias = data.noticias;
+        
+        if (!noticias || noticias.length === 0) {
+            container.innerHTML = '<p>No hay noticias en este momento.</p>';
+            return;
+        }
+        
+        // Ordenar por más recientes primero
+        const noticiasOrdenadas = [...noticias].sort((a, b) => {
+            return new Date(b.fecha) - new Date(a.fecha);
+        });
+        
+        // Renderizar noticias CON IMÁGENES
+        container.innerHTML = noticiasOrdenadas.map(noticia => `
+            <div class="noticia-card">
+                <div class="noticia-imagen" style="background-image: url('${noticia.imagen}'); background-size: cover; background-position: center;">
+                </div>
+                <div class="noticia-content">
+                    <p class="noticia-fecha">${noticia.fecha}</p>
+                    <h3 class="noticia-titulo">${noticia.titulo}</h3>
+                    <p class="noticia-descripcion">${noticia.descripcion}</p>
+                    <a href="${noticia.enlace}" class="noticia-link">Leer más</a>
+                </div>
+            </div>
+        `).join('');
+        
+        console.log('✅ Noticias cargadas:', noticiasOrdenadas.length);
+        
+    } catch (error) {
+        console.error('❌ Error al cargar noticias:', error);
+        container.innerHTML = '<p>Error al cargar las noticias.</p>';
+    }
+}
+
+// ========================================
+// FUNCIONES PRÉDICAS (desde JSON)
+// ========================================
+async function cargarPredicas() {
+    const container = document.getElementById('predicas-container');
+    
+    if (!container) return;
+    
+    try {
+        // Cargar prédicas desde data/predicas.json
+        const response = await fetch('data/predicas.json');
+        const data = await response.json();
+        const predicas = data.predicas;
+        
+        if (!predicas || predicas.length === 0) {
+            container.innerHTML = '<p>No hay prédicas disponibles en este momento.</p>';
+            return;
+        }
+        
+        // Ordenar por más recientes primero
+        const predicasOrdenadas = [...predicas].sort((a, b) => {
+            return new Date(b.fecha) - new Date(a.fecha);
+        });
+        
+        // Renderizar prédicas
+        container.innerHTML = predicasOrdenadas.map(predica => `
+            <div class="predica-card">
+                <div class="predica-video">
+                    <iframe
+                        src="https://www.youtube.com/embed/${predica.videoId}"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen>
+                    </iframe>
+                </div>
+                <div class="predica-content">
+                    <span class="predica-categoria">${predica.categoria}</span>
+                    <h3 class="predica-titulo">${predica.titulo}</h3>
+                    <p class="predica-predicador">👤 ${predica.predicador}</p>
+                    <p class="predica-fecha">📅 ${predica.fecha}</p>
+                    <a href="https://www.youtube.com/watch?v=${predica.videoId}" target="_blank" rel="noopener noreferrer" class="predica-ver">
+                        Ver en YouTube
+                    </a>
+                </div>
+            </div>
+        `).join('');
+        
+        console.log('✅ Prédicas cargadas:', predicasOrdenadas.length);
+        
+    } catch (error) {
+        console.error('❌ Error al cargar prédicas:', error);
+        container.innerHTML = '<p>Error al cargar las prédicas.</p>';
+    }
+}
+
+
+// ========================================
 // EFECTOS VISUALES
 // ========================================
 function agregarTransiciones() {
-    document.querySelectorAll('.horario-card, .red-card, .contacto-card').forEach(el => {
+    document.querySelectorAll('.horario-card, .red-card, .contacto-card, .noticia-card, .predica-card').forEach(el => {
         el.style.transition = 'all 0.3s ease';
     });
 }
 
 function agregarEfectosScroll() {
-    const elementos = document.querySelectorAll('.horario-card, .red-card, .contacto-card, .versiculo-card');
+    const elementos = document.querySelectorAll('.horario-card, .red-card, .contacto-card, .versiculo-card, .noticia-card, .predica-card');
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -104,6 +205,10 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btnNuevoVersiculo) {
         btnNuevoVersiculo.addEventListener('click', actualizarVersiculo);
     }
+    
+    // Noticias desde JSON
+    cargarNoticias();
+    cargarPredicas();
     
     // Efectos
     agregarTransiciones();
