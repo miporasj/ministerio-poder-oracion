@@ -102,22 +102,26 @@
                         <h3 style="font-size: 1.3rem; margin-bottom: 1.5rem; color: var(--color-text-dark); font-weight: 700;">Envíanos un Mensaje</h3>
                         <form action="https://formspree.io/f/maqojzlo" method="POST">
                             <div class="form-group">
-                                <label for="nombre" class="form-label">Nombre</label>
-                                <input type="text" id="nombre" name="nombre" class="form-input" required>
+                                <label class="form-label">Nombre</label>
+                                <input type="text" name="nombre" class="form-input" placeholder="Tu nombre" required>
+                                <span class="form-error">El nombre es requerido</span>
                             </div>
                             <div class="form-group">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" id="email" name="email" class="form-input" required>
+                                <label class="form-label">Email</label>
+                                <input type="email" name="email" class="form-input" placeholder="tu@email.com" required>
+                                <span class="form-error">Email inválido</span>
                             </div>
                             <div class="form-group">
-                                <label for="telefono" class="form-label">Teléfono (opcional)</label>
-                                <input type="tel" id="telefono" name="telefono" class="form-input">
+                                <label class="form-label">Teléfono (Opcional)</label>
+                                <input type="tel" name="telefono" class="form-input" placeholder="Tu teléfono">
+                                <span class="form-error">Teléfono inválido</span>
                             </div>
                             <div class="form-group">
-                                <label for="mensaje" class="form-label">Mensaje</label>
-                                <textarea id="mensaje" name="mensaje" class="form-textarea" rows="5" required></textarea>
+                                <label class="form-label">Mensaje</label>
+                                <textarea name="mensaje" class="form-textarea" placeholder="Tu mensaje..." required></textarea>
+                                <span class="form-error">El mensaje es requerido</span>
                             </div>
-                            <button type="submit" class="btn btn--primary">Enviar Mensaje</button>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Enviar Mensaje</button>
                         </form>
                     </div>
                     <div style="display: flex; flex-direction: column; gap: 1.5rem;">
