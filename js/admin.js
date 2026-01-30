@@ -235,39 +235,57 @@ window.eliminarNoticia = async (id) => {
 };
 
 // ========== PRÉDICAS CRUD ==========
-// EN LA FUNCIÓN cargarPredicas()
-predicasSnapshot.forEach((doc) => {
-    const p = doc.data();
-    
-    // Construir HTML del video si existe
-    const videoHTML = p.videoId ? `
-        <div style="margin-top: 1rem;">
-            <a href="https://www.youtube.com/watch?v=${p.videoId}" 
-               target="_blank" 
-               style="display: inline-flex; align-items: center; gap: 0.5rem; color: #ff0000; text-decoration: none; font-weight: 600;">
-                ▶️ Ver en YouTube
-            </a>
-        </div>
-    ` : '';
-    
-    predicasList.innerHTML += `
-        <div class="item">
-            <div class="item-content">
-                <div class="item-icon">🎤</div>
-                <div class="item-predicador">${p.predicador}</div>
-                <div class="item-date">${p.fecha}</div>
-                <div class="item-title">${p.titulo}</div>
-                <div class="item-description">${p.descripcion}</div>
-                ${videoHTML}  <!-- ← AGREGAR AQUÍ -->
-            </div>
-            <div class="item-actions">
-                <button class="btn-edit" onclick="editarPredica('${doc.id}')">✏️ Editar</button>
-                <button class="btn-delete" onclick="eliminarPredica('${doc.id}')">🗑️ Eliminar</button>
-            </div>
-        </div>
-    `;
-});
-
+async function cargarPredicas() {
+    try {
+        const q = query(collection(db, 'predicas'), orderBy('fecha', 'desc'));
+        const querySnapshot = await getDocs(q);
+        
+        if (querySnapshot.empty) {
+            predicasList.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <p>No hay prédicas publicadas</p>
+                </div>
+            `;
+            return;
+        }
+        
+        predicasList.innerHTML = '';
+        querySnapshot.forEach((doc) => {
+            const p = doc.data();
+            
+            // Construir HTML del video si existe
+            const videoHTML = p.videoId ? `
+                <div style="margin-top: 1rem;">
+                    <a href="https://www.youtube.com/watch?v=${p.videoId}" 
+                       target="_blank" 
+                       style="display: inline-flex; align-items: center; gap: 0.5rem; color: #ff0000; text-decoration: none; font-weight: 600;">
+                        ▶️ Ver en YouTube
+                    </a>
+                </div>
+            ` : '';
+            
+            predicasList.innerHTML += `
+                <div class="item">
+                    <div class="item-content">
+                        <div class="item-icon">🎤</div>
+                        <div class="item-predicador">${p.predicador}</div>
+                        <div class="item-date">${p.fecha}</div>
+                        <div class="item-title">${p.titulo}</div>
+                        <div class="item-description">${p.descripcion}</div>
+                        ${videoHTML}
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn-edit" onclick="editarPredica('${doc.id}', ${JSON.stringify(p).replace(/"/g, '&quot;')})">✏️ Editar</button>
+                        <button class="btn-delete" onclick="eliminarPredica('${doc.id}')">🗑️ Eliminar</button>
+                    </div>
+                </div>
+            `;
+        });
+    } catch (error) {
+        console.error('Error al cargar prédicas:', error);
+    }
+}
 
 predicaForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -318,3 +336,4 @@ window.eliminarPredica = async (id) => {
         }
     }
 };
+
