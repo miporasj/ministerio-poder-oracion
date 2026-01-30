@@ -159,32 +159,37 @@ async function cargarPredicas() {
     const grid = document.getElementById('predicasGrid');
     
     try {
-        const q = query(collection(db, 'predicas'), orderBy('fecha', 'desc'));
-        const querySnapshot = await getDocs(q);
-        
-        if (querySnapshot.empty) {
-            grid.innerHTML = `
-                <div style="text-align: center; padding: 3rem; color: var(--color-text-light);">
-                    <div style="font-size: 4rem; margin-bottom: 1rem;">📭</div>
-                    <p>No hay prédicas disponibles en este momento.</p>
-                </div>
-            `;
-            return;
-        }
-        
-        grid.innerHTML = '';
+        // EN LA FUNCIÓN cargarPredicas()
         querySnapshot.forEach((doc) => {
             const p = doc.data();
-            grid.innerHTML += `
-                <div class="predica-card" style="position: relative; z-index: 2;">
-                    <div style="font-size: 3rem; background: linear-gradient(135deg, var(--color-primary), var(--color-warning)); padding: 2rem; border-radius: 12px; text-align: center; color: white; margin-bottom: 1rem;">🎤</div>
-                    <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--color-text-dark); margin-bottom: 0.5rem;">${p.titulo}</h3>
-                    <p style="color: var(--color-primary); font-weight: 600; font-size: 0.9rem; margin-bottom: 0.25rem;">${p.predicador}</p>
-                    <p style="color: var(--color-text-light); font-size: 0.85rem; margin-bottom: 0.75rem;">${p.fecha}</p>
-                    <p style="color: var(--color-text-light); line-height: 1.6;">${p.descripcion}</p>
-                </div>
-            `;
+    
+    // Construir embed de YouTube si existe
+        const videoHTML = p.videoId ? `
+            <div style="margin-top: 1rem; border-radius: 8px; overflow: hidden;">
+             <iframe 
+                width="100%" 
+                height="200" 
+                src="https://www.youtube.com/embed/${p.videoId}" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen
+                style="border-radius: 8px;">
+            </iframe>
+        </div>
+    ` : '';
+    
+    grid.innerHTML += `
+        <div class="predica-card" style="position: relative; z-index: 2;">
+            <div style="font-size: 3rem; background: linear-gradient(135deg, var(--color-primary), var(--color-warning)); padding: 2rem; border-radius: 12px; text-align: center; color: white; margin-bottom: 1rem;">🎤</div>
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--color-text-dark); margin-bottom: 0.5rem;">${p.titulo}</h3>
+            <p style="color: var(--color-primary); font-weight: 600; font-size: 0.9rem; margin-bottom: 0.25rem;">${p.predicador}</p>
+            <p style="color: var(--color-text-light); font-size: 0.85rem; margin-bottom: 0.75rem;">${p.fecha}</p>
+            <p style="color: var(--color-text-light); line-height: 1.6;">${p.descripcion}</p>
+            ${videoHTML}  <!-- ← AGREGAR AQUÍ -->
+        </div>
+    `;
         });
+
 
         document.querySelectorAll('.predica-card').forEach(card => observer.observe(card));
     } catch (error) {

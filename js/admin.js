@@ -1,3 +1,19 @@
+// Extraer ID de video de YouTube
+function extractYouTubeID(url) {
+    if (!url) return '';
+    
+    // Si ya es solo el ID (11 caracteres alfanuméricos)
+    if (/^[a-zA-Z0-9_-]{11}$/.test(url.trim())) {
+        return url.trim();
+    }
+    
+    // Extraer de URL completa
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : '';
+}
+
+
 // ========== IMPORTAR FIREBASE ==========
 import { auth, db } from './firebase-config.js';
 import { 
@@ -219,44 +235,39 @@ window.eliminarNoticia = async (id) => {
 };
 
 // ========== PRÉDICAS CRUD ==========
-async function cargarPredicas() {
-    try {
-        const q = query(collection(db, 'predicas'), orderBy('fecha', 'desc'));
-        const querySnapshot = await getDocs(q);
-        
-        if (querySnapshot.empty) {
-            predicasList.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">📭</div>
-                    <p>No hay prédicas publicadas</p>
-                </div>
-            `;
-            return;
-        }
-        
-        predicasList.innerHTML = '';
-        querySnapshot.forEach((doc) => {
-            const predica = doc.data();
-            predicasList.innerHTML += `
-                <div class="item">
-                    <div class="item-content">
-                        <div class="item-icon">🎤</div>
-                        <h3 class="item-title">${predica.titulo}</h3>
-                        <div class="item-predicador">${predica.predicador}</div>
-                        <div class="item-date">${predica.fecha}</div>
-                        <p class="item-description">${predica.descripcion}</p>
-                    </div>
-                    <div class="item-actions">
-                        <button class="btn-edit" onclick="editarPredica('${doc.id}', ${JSON.stringify(predica).replace(/"/g, '&quot;')})">✏️ Editar</button>
-                        <button class="btn-delete" onclick="eliminarPredica('${doc.id}')">🗑️ Eliminar</button>
-                    </div>
-                </div>
-            `;
-        });
-    } catch (error) {
-        console.error('Error al cargar prédicas:', error);
-    }
-}
+// EN LA FUNCIÓN cargarPredicas()
+predicasSnapshot.forEach((doc) => {
+    const p = doc.data();
+    
+    // Construir HTML del video si existe
+    const videoHTML = p.videoId ? `
+        <div style="margin-top: 1rem;">
+            <a href="https://www.youtube.com/watch?v=${p.videoId}" 
+               target="_blank" 
+               style="display: inline-flex; align-items: center; gap: 0.5rem; color: #ff0000; text-decoration: none; font-weight: 600;">
+                ▶️ Ver en YouTube
+            </a>
+        </div>
+    ` : '';
+    
+    predicasList.innerHTML += `
+        <div class="item">
+            <div class="item-content">
+                <div class="item-icon">🎤</div>
+                <div class="item-predicador">${p.predicador}</div>
+                <div class="item-date">${p.fecha}</div>
+                <div class="item-title">${p.titulo}</div>
+                <div class="item-description">${p.descripcion}</div>
+                ${videoHTML}  <!-- ← AGREGAR AQUÍ -->
+            </div>
+            <div class="item-actions">
+                <button class="btn-edit" onclick="editarPredica('${doc.id}')">✏️ Editar</button>
+                <button class="btn-delete" onclick="eliminarPredica('${doc.id}')">🗑️ Eliminar</button>
+            </div>
+        </div>
+    `;
+});
+
 
 predicaForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -266,6 +277,7 @@ predicaForm.addEventListener('submit', async (e) => {
         titulo: document.getElementById('predicaTitulo').value,
         predicador: document.getElementById('predicaPredicador').value,
         fecha: document.getElementById('predicaFecha').value,
+        videoId: extractYouTubeID(document.getElementById('predicaVideoUrl').value),
         descripcion: document.getElementById('predicaDescripcion').value
     };
     
@@ -289,6 +301,7 @@ window.editarPredica = (id, predica) => {
     document.getElementById('predicaTitulo').value = predica.titulo;
     document.getElementById('predicaPredicador').value = predica.predicador;
     document.getElementById('predicaFecha').value = predica.fecha;
+    document.getElementById('predicaVideoUrl').value = predica.videoId || '';
     document.getElementById('predicaDescripcion').value = predica.descripcion;
     document.getElementById('predicaModalTitle').textContent = 'Editar Prédica';
     predicaModal.classList.add('active');

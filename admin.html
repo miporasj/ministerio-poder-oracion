@@ -135,6 +135,13 @@
                         <label class="form-label">Fecha (YYYY-MM-DD)</label>
                         <input type="date" class="form-input" id="predicaFecha" required>
                     </div>
+                    <div class="form-group">
+                        <label class="form-label">Video de YouTube (opcional)</label>
+                        <input type="text" class="form-input" id="predicaVideoUrl" placeholder="https://www.youtube.com/watch?v=VIDEO_ID o solo VIDEO_ID">
+                        <small style="color: var(--color-text-light); font-size: 0.85rem; display: block; margin-top: 0.5rem;">
+                        Pega el link completo o solo el ID del video
+                        </small>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Descripción</label>
@@ -145,6 +152,6 @@
         </div>
     </div>
 
-    <script type="module" src="admin.js"></script>
+    <script type="module" src="js/admin.js"></script>
 </body>
 </html>
