@@ -1,3 +1,12 @@
+// ========== IMPORTAR FIREBASE ==========
+import { db } from './firebase-config.js';
+import { 
+    collection, 
+    getDocs, 
+    query, 
+    orderBy 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
 // ========== NAVBAR ========== 
 const navbar = document.getElementById('navbar');
 const menuToggle = document.getElementById('menuToggle');
@@ -25,70 +34,73 @@ document.querySelectorAll('.nav-link').forEach(link => {
 
 // ========== VALIDACIÓN DE FORMULARIO ========== 
 const form = document.getElementById('contactForm');
-form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    let isValid = true;
 
-    const nombre = form.querySelector('[name="nombre"]');
-    if (!nombre.value.trim()) {
-        nombre.parentElement.classList.add('error');
-        isValid = false;
-    } else {
-        nombre.parentElement.classList.remove('error');
-        nombre.parentElement.classList.add('success');
-    }
+if (form) {
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        let isValid = true;
 
-    const email = form.querySelector('[name="email"]');
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email.value)) {
-        email.parentElement.classList.add('error');
-        isValid = false;
-    } else {
-        email.parentElement.classList.remove('error');
-        email.parentElement.classList.add('success');
-    }
+        const nombre = form.querySelector('[name="nombre"]');
+        if (!nombre.value.trim()) {
+            nombre.parentElement.classList.add('error');
+            isValid = false;
+        } else {
+            nombre.parentElement.classList.remove('error');
+            nombre.parentElement.classList.add('success');
+        }
 
-    const telefono = form.querySelector('[name="telefono"]');
-    if (telefono.value && !/^\+?[\d\s\-()]{10,}$/.test(telefono.value)) {
-        telefono.parentElement.classList.add('error');
-        isValid = false;
-    } else {
-        telefono.parentElement.classList.remove('error');
-        if (telefono.value) telefono.parentElement.classList.add('success');
-    }
+        const email = form.querySelector('[name="email"]');
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email.value)) {
+            email.parentElement.classList.add('error');
+            isValid = false;
+        } else {
+            email.parentElement.classList.remove('error');
+            email.parentElement.classList.add('success');
+        }
 
-    const mensaje = form.querySelector('[name="mensaje"]');
-    if (!mensaje.value.trim()) {
-        mensaje.parentElement.classList.add('error');
-        isValid = false;
-    } else {
-        mensaje.parentElement.classList.remove('error');
-        mensaje.parentElement.classList.add('success');
-    }
+        const telefono = form.querySelector('[name="telefono"]');
+        if (telefono.value && !/^\+?[\d\s\-()]{10,}$/.test(telefono.value)) {
+            telefono.parentElement.classList.add('error');
+            isValid = false;
+        } else {
+            telefono.parentElement.classList.remove('error');
+            if (telefono.value) telefono.parentElement.classList.add('success');
+        }
 
-    if (isValid) {
-        alert('¡Mensaje enviado correctamente! Nos pondremos en contacto pronto.');
-        form.reset();
-        document.querySelectorAll('.form-group').forEach(g => g.classList.remove('success'));
-    }
-});
+        const mensaje = form.querySelector('[name="mensaje"]');
+        if (!mensaje.value.trim()) {
+            mensaje.parentElement.classList.add('error');
+            isValid = false;
+        } else {
+            mensaje.parentElement.classList.remove('error');
+            mensaje.parentElement.classList.add('success');
+        }
 
-form.querySelectorAll('.form-input, .form-textarea').forEach(input => {
-    input.addEventListener('blur', () => {
-        if (input.value.trim()) {
-            input.parentElement.classList.remove('error');
-            if (input.name !== 'telefono' || input.value) {
-                input.parentElement.classList.add('success');
+        if (isValid) {
+            alert('¡Mensaje enviado correctamente! Nos pondremos en contacto pronto.');
+            form.reset();
+            document.querySelectorAll('.form-group').forEach(g => g.classList.remove('success'));
+        }
+    });
+
+    form.querySelectorAll('.form-input, .form-textarea').forEach(input => {
+        input.addEventListener('blur', () => {
+            if (input.value.trim()) {
+                input.parentElement.classList.remove('error');
+                if (input.name !== 'telefono' || input.value) {
+                    input.parentElement.classList.add('success');
+                }
             }
-        }
-    });
+        });
 
-    input.addEventListener('input', () => {
-        if (input.value.trim()) {
-            input.parentElement.classList.remove('error');
-        }
+        input.addEventListener('input', () => {
+            if (input.value.trim()) {
+                input.parentElement.classList.remove('error');
+            }
+        });
     });
-});
+}
 
 // ========== ANIMACIÓN SCROLL EN TARJETAS ========== 
 const observer = new IntersectionObserver((entries) => {
@@ -99,53 +111,90 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, { threshold: 0.1 });
 
-// ========== CARGAR NOTICIAS DESDE JSON ========== 
+// ========== CARGAR NOTICIAS DESDE FIREBASE ========== 
 async function cargarNoticias() {
+    const grid = document.getElementById('noticiasGrid');
+    
     try {
-        const response = await fetch('data/noticias.json');
-        const data = await response.json();
-        const noticias = data.noticias;
-
-        const grid = document.getElementById('noticiasGrid');
-        grid.innerHTML = noticias.map(n => `
-            <div class="noticia-card" style="position: relative; z-index: 2;">
-                <img src="${n.imagen}" alt="${n.titulo}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 12px; margin-bottom: 1rem;">
-                <p style="color: var(--color-primary); font-weight: 600; font-size: 0.85rem; margin-bottom: 0.5rem;">${n.fecha}</p>
-                <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--color-text-dark); margin-bottom: 0.75rem;">${n.titulo}</h3>
-                <p style="color: var(--color-text-light); line-height: 1.6;">${n.descripcion}</p>
-            </div>
-        `).join('');
+        const q = query(collection(db, 'noticias'), orderBy('fecha', 'desc'));
+        const querySnapshot = await getDocs(q);
+        
+        if (querySnapshot.empty) {
+            grid.innerHTML = `
+                <div style="text-align: center; padding: 3rem; color: var(--color-text-light);">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">📭</div>
+                    <p>No hay noticias disponibles en este momento.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        grid.innerHTML = '';
+        querySnapshot.forEach((doc) => {
+            const n = doc.data();
+            grid.innerHTML += `
+                <div class="noticia-card" style="position: relative; z-index: 2;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">${n.icon}</div>
+                    <p style="color: var(--color-primary); font-weight: 600; font-size: 0.85rem; margin-bottom: 0.5rem;">${n.fecha}</p>
+                    <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--color-text-dark); margin-bottom: 0.75rem;">${n.titulo}</h3>
+                    <p style="color: var(--color-text-light); line-height: 1.6;">${n.descripcion}</p>
+                </div>
+            `;
+        });
 
         document.querySelectorAll('.noticia-card').forEach(card => observer.observe(card));
     } catch (error) {
         console.error('Error al cargar noticias:', error);
+        grid.innerHTML = `
+            <div style="text-align: center; padding: 3rem; color: var(--color-danger);">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">⚠️</div>
+                <p>Error al cargar las noticias. Intenta recargar la página.</p>
+            </div>
+        `;
     }
 }
 
-
-// ========== CARGAR PRÉDICAS DESDE JSON ========== 
+// ========== CARGAR PRÉDICAS DESDE FIREBASE ========== 
 async function cargarPredicas() {
+    const grid = document.getElementById('predicasGrid');
+    
     try {
-        const response = await fetch('data/predicas.json');
-        const data = await response.json();
-        const predicas = data.predicas;
-
-        const grid = document.getElementById('predicasGrid');
-        grid.innerHTML = predicas.map(p => `
-            <div class="predica-card" style="position: relative; z-index: 2;">
-                <div style="position: relative; width: 100%; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; margin-bottom: 1rem; background: #000;">
-                    <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" src="https://www.youtube.com/embed/${p.videoId}?rel=0" title="${p.titulo}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        const q = query(collection(db, 'predicas'), orderBy('fecha', 'desc'));
+        const querySnapshot = await getDocs(q);
+        
+        if (querySnapshot.empty) {
+            grid.innerHTML = `
+                <div style="text-align: center; padding: 3rem; color: var(--color-text-light);">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">📭</div>
+                    <p>No hay prédicas disponibles en este momento.</p>
                 </div>
-                <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--color-text-dark); margin-bottom: 0.5rem;">${p.titulo}</h3>
-                <p style="color: var(--color-primary); font-weight: 600; font-size: 0.9rem; margin-bottom: 0.25rem;">${p.predicador}</p>
-                <p style="color: var(--color-text-light); font-size: 0.85rem; margin-bottom: 0.75rem;">${p.fecha}</p>
-                <p style="background-color: var(--color-bg-light); padding: 0.5rem; border-radius: 6px; color: var(--color-primary); font-size: 0.8rem; font-weight: 600; display: inline-block;">${p.categoria}</p>
-            </div>
-        `).join('');
+            `;
+            return;
+        }
+        
+        grid.innerHTML = '';
+        querySnapshot.forEach((doc) => {
+            const p = doc.data();
+            grid.innerHTML += `
+                <div class="predica-card" style="position: relative; z-index: 2;">
+                    <div style="font-size: 3rem; background: linear-gradient(135deg, var(--color-primary), var(--color-warning)); padding: 2rem; border-radius: 12px; text-align: center; color: white; margin-bottom: 1rem;">🎤</div>
+                    <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--color-text-dark); margin-bottom: 0.5rem;">${p.titulo}</h3>
+                    <p style="color: var(--color-primary); font-weight: 600; font-size: 0.9rem; margin-bottom: 0.25rem;">${p.predicador}</p>
+                    <p style="color: var(--color-text-light); font-size: 0.85rem; margin-bottom: 0.75rem;">${p.fecha}</p>
+                    <p style="color: var(--color-text-light); line-height: 1.6;">${p.descripcion}</p>
+                </div>
+            `;
+        });
 
         document.querySelectorAll('.predica-card').forEach(card => observer.observe(card));
     } catch (error) {
         console.error('Error al cargar prédicas:', error);
+        grid.innerHTML = `
+            <div style="text-align: center; padding: 3rem; color: var(--color-danger);">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">⚠️</div>
+                <p>Error al cargar las prédicas. Intenta recargar la página.</p>
+            </div>
+        `;
     }
 }
 

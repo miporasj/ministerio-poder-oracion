@@ -88,7 +88,7 @@
                 height: 45px;
             }
         }
-        
+
         @keyframes slideIn {
             from { opacity: 0; transform: translateX(-20px); }
             to { opacity: 1; transform: translateX(0); }
@@ -168,7 +168,7 @@
 
         .hero {
             position: relative;
-            min-height: 80vh;
+            min-height: 45vh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -508,4 +508,38 @@
         @media (max-width: 768px) {
             .whatsapp-btn {bottom: 20px; right: 20px; width: 50px; height: 50px; font-size: 24px; }
         }
+
+        /* ========== OPTIMIZACIÓN DE IMÁGENES ========== */
+.noticia-card img {
+    will-change: opacity;
+    transform: translateZ(0); /* Activa aceleración GPU */
+}
+
+.noticia-card {
+    contain: layout style paint; /* Aísla el renderizado */
+    will-change: opacity;
+}
+
+/* Placeholder animado mientras carga */
+.noticia-card > div:first-child::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        rgba(108, 190, 167, 0.05) 0%,
+        rgba(138, 205, 201, 0.1) 50%,
+        rgba(108, 190, 167, 0.05) 100%
+    );
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
 
