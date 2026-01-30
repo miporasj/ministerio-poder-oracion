@@ -176,29 +176,24 @@ async function cargarPredicas() {
         querySnapshot.forEach((doc) => {
             const p = doc.data();
             
-            // Si tiene video, mostrar thumbnail clickeable
-            const headerHTML = p.videoId ? `
-                <a href="https://www.youtube.com/watch?v=${p.videoId}" target="_blank" style="display: block; position: relative; cursor: pointer; border-radius: 12px; overflow: hidden; margin-bottom: 1rem;">
-                    <img 
-                        src="https://img.youtube.com/vi/${p.videoId}/hqdefault.jpg" 
-                        alt="Video de la prédica"
-                        style="width: 100%; height: auto; display: block; transition: transform 0.3s ease;"
-                        onmouseover="this.style.transform='scale(1.05)'"
-                        onmouseout="this.style.transform='scale(1)'"
-                    >
-                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.7); border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
-                        <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
-                            <path d="M8 5v14l11-7z"/>
-                        </svg>
-                    </div>
-                </a>
-            ` : `
-                <div style="font-size: 3rem; background: linear-gradient(135deg, var(--color-primary), var(--color-warning)); padding: 2rem; border-radius: 12px; text-align: center; color: white; margin-bottom: 1rem;">🎤</div>
-            `;
+            // Construir embed de YouTube si existe
+            const videoHTML = p.videoId ? `
+                <div style="margin-bottom: 1rem; border-radius: 12px; overflow: hidden;">
+                    <iframe 
+                        width="100%" 
+                        height="250" 
+                        src="https://www.youtube.com/embed/${p.videoId}" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen
+                        style="border-radius: 12px;">
+                    </iframe>
+                </div>
+            ` : '';
             
             grid.innerHTML += `
                 <div class="predica-card" style="position: relative; z-index: 2;">
-                    ${headerHTML}
+                    ${videoHTML}
                     <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--color-text-dark); margin-bottom: 0.5rem;">${p.titulo}</h3>
                     <p style="color: var(--color-primary); font-weight: 600; font-size: 0.9rem; margin-bottom: 0.25rem;">${p.predicador}</p>
                     <p style="color: var(--color-text-light); font-size: 0.85rem; margin-bottom: 0.75rem;">${p.fecha}</p>
@@ -218,6 +213,8 @@ async function cargarPredicas() {
         `;
     }
 }
+
+
 
 
 // ========== INICIALIZAR ========== 
