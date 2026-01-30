@@ -263,9 +263,16 @@
             font-size: 1.1rem;
         }
 
-        .noticias-grid, .predicas-grid, .horarios-grid {
+        .noticias-grid, .horarios-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .predicas-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);  /* ← 4 columnas fijas */
             gap: 2rem;
             margin-top: 2rem;
         }
@@ -542,4 +549,22 @@
     100% { transform: translateX(100%); }
 }
 
+/* Responsive para prédicas */
+@media (max-width: 1200px) {
+    .predicas-grid {
+        grid-template-columns: repeat(3, 1fr);  /* 3 en tablets grandes */
+    }
+}
+
+@media (max-width: 900px) {
+    .predicas-grid {
+        grid-template-columns: repeat(2, 1fr);  /* 2 en tablets */
+    }
+}
+
+@media (max-width: 768px) {
+    .predicas-grid {
+        grid-template-columns: repeat(2, 1fr);  /* 1 en móviles */
+    }
+}
 
