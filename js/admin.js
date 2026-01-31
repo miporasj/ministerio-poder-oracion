@@ -337,3 +337,134 @@ window.eliminarPredica = async (id) => {
     }
 };
 
+// ========== DEVOCIONALES MANAGEMENT ========== 
+const addDevocionalBtn = document.getElementById('addDevocionalBtn');
+const devocionalModal = document.getElementById('devocionalModal');
+const closeDevocionalModal = document.getElementById('closeDevocionalModal');
+const devocionalForm = document.getElementById('devocionalForm');
+const devocionalesList = document.getElementById('devocionalesList');
+
+// Abrir modal para nuevo devocional
+addDevocionalBtn?.addEventListener('click', () => {
+    devocionalForm.reset();
+    document.getElementById('devocionalId').value = '';
+    document.getElementById('devocionalModalTitle').textContent = 'Nuevo Devocional';
+    devocionalModal.classList.add('active');
+});
+
+// Cerrar modal
+closeDevocionalModal?.addEventListener('click', () => {
+    devocionalModal.classList.remove('active');
+});
+
+// Cerrar modal al hacer click fuera
+devocionalModal?.addEventListener('click', (e) => {
+    if (e.target === devocionalModal) {
+        devocionalModal.classList.remove('active');
+    }
+});
+
+// Cargar devocionales
+async function loadDevocionales() {
+    try {
+        const q = query(collection(db, 'devocionales'), orderBy('fecha', 'desc'));
+        const snapshot = await getDocs(q);
+        
+        if (snapshot.empty) {
+            devocionalesList.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <p>No hay devocionales publicados</p>
+                </div>
+            `;
+            return;
+        }
+
+        devocionalesList.innerHTML = '';
+        snapshot.forEach(doc => {
+            const devocional = doc.data();
+            const item = document.createElement('div');
+            item.className = 'item';
+            item.innerHTML = `
+                <div class="item-content">
+                    <div class="item-icon">📖</div>
+                    <div class="item-date">${devocional.fecha}</div>
+                    <div class="item-predicador">Por ${devocional.autor}</div>
+                    <div class="item-title">${devocional.versiculo}</div>
+                    <div class="item-description">${devocional.textoVersiculo.substring(0, 150)}...</div>
+                </div>
+                <div class="item-actions">
+                    <button class="btn-edit" onclick="editDevocional('${doc.id}')">✏️ Editar</button>
+                    <button class="btn-delete" onclick="deleteDevocional('${doc.id}')">🗑️ Eliminar</button>
+                </div>
+            `;
+            devocionalesList.appendChild(item);
+        });
+    } catch (error) {
+        console.error('Error loading devocionales:', error);
+    }
+}
+
+// Guardar devocional
+devocionalForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const devocionalId = document.getElementById('devocionalId').value;
+    const devocionalData = {
+        fecha: document.getElementById('devocionalFecha').value,
+        autor: document.getElementById('devocionalAutor').value,
+        versiculo: document.getElementById('devocionalVersiculo').value,
+        textoVersiculo: document.getElementById('devocionalTextoVersiculo').value,
+        reflexion: document.getElementById('devocionalReflexion').value,
+        oracion: document.getElementById('devocionalOracion').value,
+        timestamp: new Date()
+    };
+
+    try {
+        if (devocionalId) {
+            await updateDoc(doc(db, 'devocionales', devocionalId), devocionalData);
+        } else {
+            await addDoc(collection(db, 'devocionales'), devocionalData);
+        }
+        
+        devocionalModal.classList.remove('active');
+        devocionalForm.reset();
+        loadDevocionales();
+    } catch (error) {
+        console.error('Error saving devocional:', error);
+        alert('Error al guardar el devocional');
+    }
+});
+
+// Editar devocional
+window.editDevocional = async (id) => {
+    try {
+        const docSnap = await getDoc(doc(db, 'devocionales', id));
+        if (docSnap.exists()) {
+            const devocional = docSnap.data();
+            document.getElementById('devocionalId').value = id;
+            document.getElementById('devocionalFecha').value = devocional.fecha;
+            document.getElementById('devocionalAutor').value = devocional.autor;
+            document.getElementById('devocionalVersiculo').value = devocional.versiculo;
+            document.getElementById('devocionalTextoVersiculo').value = devocional.textoVersiculo;
+            document.getElementById('devocionalReflexion').value = devocional.reflexion;
+            document.getElementById('devocionalOracion').value = devocional.oracion;
+            document.getElementById('devocionalModalTitle').textContent = 'Editar Devocional';
+            devocionalModal.classList.add('active');
+        }
+    } catch (error) {
+        console.error('Error loading devocional:', error);
+    }
+};
+
+// Eliminar devocional
+window.deleteDevocional = async (id) => {
+    if (confirm('¿Estás seguro de eliminar este devocional?')) {
+        try {
+            await deleteDoc(doc(db, 'devocionales', id));
+            loadDevocionales();
+        } catch (error) {
+            console.error('Error deleting devocional:', error);
+        }
+    }
+};
