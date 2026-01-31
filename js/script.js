@@ -214,12 +214,35 @@ async function cargarPredicas() {
     }
 }
 
-
-
-
 // ========== INICIALIZAR ========== 
 document.addEventListener('DOMContentLoaded', () => {
     cargarNoticias();
     cargarPredicas();
     document.querySelectorAll('.horario-card').forEach(card => observer.observe(card));
 });
+
+// ========== RADIO FLOTANTE ========== 
+const radioPlayer = document.getElementById('radioPlayer');
+const radioToggle = document.getElementById('radioToggle');
+const radioHeader = document.querySelector('.radio-header');
+
+if (radioToggle && radioPlayer && radioHeader) {
+    // Toggle al hacer click en el header
+    radioHeader.addEventListener('click', () => {
+        radioPlayer.classList.toggle('collapsed');
+    });
+
+    // Guardar estado en localStorage
+    const savedState = localStorage.getItem('radioCollapsed');
+    if (savedState === 'true') {
+        radioPlayer.classList.add('collapsed');
+    }
+
+    // Guardar estado al cambiar
+    radioHeader.addEventListener('click', () => {
+        const isCollapsed = radioPlayer.classList.contains('collapsed');
+        localStorage.setItem('radioCollapsed', isCollapsed);
+    });
+}
+
+
