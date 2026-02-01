@@ -24,7 +24,8 @@ import {
 import { 
     collection, 
     addDoc, 
-    getDocs, 
+    getDocs,
+    getDoc, 
     doc, 
     updateDoc, 
     deleteDoc,
@@ -70,6 +71,7 @@ onAuthStateChanged(auth, (user) => {
         userEmail.textContent = user.email;
         cargarNoticias();
         cargarPredicas();
+        loadDevocionales();
     } else {
         loginScreen.style.display = 'block';
         dashboard.classList.remove('active');

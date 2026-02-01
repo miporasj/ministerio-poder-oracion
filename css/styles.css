@@ -652,4 +652,90 @@
     }
 }
 
+/* ========== DEVOCIONALES ========== */
+.devocionales-grid {
+    display: grid;
+    gap: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.devocional-card {
+    background: var(--color-bg-white);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: var(--shadow);
+    border-left: 4px solid var(--color-primary);
+}
+
+.devocional-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.devocional-fecha {
+    color: var(--color-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.devocional-autor {
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+}
+
+.devocional-versiculo {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+    color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.devocional-versiculo-ref {
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.devocional-versiculo-texto {
+    font-style: italic;
+    line-height: 1.6;
+}
+
+.devocional-section {
+    margin-bottom: 1.5rem;
+}
+
+.devocional-section-title {
+    color: var(--color-primary);
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.devocional-section-content {
+    color: var(--color-text);
+    line-height: 1.7;
+    text-align: justify;
+}
+
+.devocional-oracion {
+    background: var(--color-bg-light);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 3px solid var(--color-primary);
+    font-style: italic;
+    color: var(--color-text);
+    line-height: 1.7;
+}
+
+
 
