@@ -48,20 +48,24 @@ const tabContents = document.querySelectorAll('.tab-content');
 // Modales
 const noticiaModal = document.getElementById('noticiaModal');
 const predicaModal = document.getElementById('predicaModal');
+const devocionalModal = document.getElementById('devocionalModal');
 
 // Botones
 const addNoticiaBtn = document.getElementById('addNoticiaBtn');
 const addPredicaBtn = document.getElementById('addPredicaBtn');
+const addDevocionalBtn = document.getElementById('addDevocionalBtn');
 const closeNoticiaModal = document.getElementById('closeNoticiaModal');
 const closePredicaModal = document.getElementById('closePredicaModal');
+const closeDevocionalModal = document.getElementById('closeDevocionalModal');
 
 // Formularios
 const noticiaForm = document.getElementById('noticiaForm');
 const predicaForm = document.getElementById('predicaForm');
-
+const devocionalForm = document.getElementById('devocionalForm');
 // Listas
 const noticiasList = document.getElementById('noticiasList');
 const predicasList = document.getElementById('predicasList');
+const devocionalesList = document.getElementById('devocionalesList');
 
 // ========== AUTENTICACIÓN ==========
 onAuthStateChanged(auth, (user) => {
@@ -338,13 +342,6 @@ window.eliminarPredica = async (id) => {
         }
     }
 };
-
-// ========== DEVOCIONALES MANAGEMENT ========== 
-const addDevocionalBtn = document.getElementById('addDevocionalBtn');
-const devocionalModal = document.getElementById('devocionalModal');
-const closeDevocionalModal = document.getElementById('closeDevocionalModal');
-const devocionalForm = document.getElementById('devocionalForm');
-const devocionalesList = document.getElementById('devocionalesList');
 
 // Abrir modal para nuevo devocional
 addDevocionalBtn?.addEventListener('click', () => {
