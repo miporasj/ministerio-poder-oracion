@@ -218,6 +218,7 @@ async function cargarPredicas() {
 document.addEventListener('DOMContentLoaded', () => {
     cargarNoticias();
     cargarPredicas();
+    loadDevocionales();
     document.querySelectorAll('.horario-card').forEach(card => observer.observe(card));
 });
 
@@ -245,52 +246,91 @@ if (radioToggle && radioPlayer && radioHeader) {
     });
 }
 
-// ========== CARGAR DEVOCIONALES ========== 
+// ========== CARGAR DEVOCIONALES ==========
 async function loadDevocionales() {
-    const container = document.getElementById('devocionalesContainer');
-    if (!container) return;
-
     try {
-        const q = query(collection(db, 'devocionales'), orderBy('fecha', 'desc'), limit(5));
-        const snapshot = await getDocs(q);
-
-        if (snapshot.empty) {
-            container.innerHTML = '<p style="text-align: center; color: var(--color-text-light);">No hay devocionales disponibles</p>';
+        const devocionalesContainer = document.getElementById('devocionalesContainer');
+        
+        if (!devocionalesContainer) {
+            console.error('Contenedor de devocionales no encontrado');
             return;
         }
 
-        container.innerHTML = '';
-        snapshot.forEach(doc => {
-            const dev = doc.data();
-            const card = document.createElement('div');
-            card.className = 'devocional-card';
-            card.innerHTML = `
+        // Mostrar loading
+        devocionalesContainer.innerHTML = '<p style="text-align: center; padding: 2rem;">Cargando devocional...</p>';
+        
+        // Obtener el devocional más reciente
+        const q = query(
+            collection(db, 'devocionales'),
+            orderBy('fecha', 'desc'),
+            limit(1)
+        );
+        
+        const snapshot = await getDocs(q);
+        
+        if (snapshot.empty) {
+            devocionalesContainer.innerHTML = `
+                <div style="text-align: center; padding: 3rem; color: var(--color-text-light);">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">📭</div>
+                    <p>No hay devocionales disponibles</p>
+                </div>
+            `;
+            return;
+        }
+        
+        const devocional = snapshot.docs[0].data();
+        
+        // Formatear fecha
+        const fecha = new Date(devocional.fecha);
+        const opciones = { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        };
+        const fechaFormateada = fecha.toLocaleDateString('es-AR', opciones);
+        
+        // Renderizar devocional
+        devocionalesContainer.innerHTML = `
+            <div class="devocional-card">
                 <div class="devocional-header">
-                    <span class="devocional-fecha">📅 ${dev.fecha}</span>
-                    <span class="devocional-autor">✍️ ${dev.autor}</span>
+                    <div class="devocional-fecha">${fechaFormateada}</div>
+                    <div class="devocional-autor">Por ${devocional.autor}</div>
                 </div>
                 
                 <div class="devocional-versiculo">
-                    <div class="devocional-versiculo-ref">${dev.versiculo}</div>
-                    <div class="devocional-versiculo-texto">"${dev.textoVersiculo}"</div>
+                    <div class="versiculo-referencia">📖 ${devocional.versiculo}</div>
+                    <div class="versiculo-texto">"${devocional.textoVersiculo}"</div>
                 </div>
-
-                <div class="devocional-section">
-                    <div class="devocional-section-title">💭 Reflexión</div>
-                    <div class="devocional-section-content">${dev.reflexion}</div>
+                
+                <div class="devocional-body">
+                    <div class="devocional-section">
+                        <h3>💭 Reflexión</h3>
+                        <p>${devocional.reflexion}</p>
+                    </div>
+                    
+                    <div class="devocional-section">
+                        <h3>🙏 Oración</h3>
+                        <p>${devocional.oracion}</p>
+                    </div>
                 </div>
-
-                <div class="devocional-section">
-                    <div class="devocional-section-title">🙏 Oración</div>
-                    <div class="devocional-oracion">${dev.oracion}</div>
-                </div>
-            `;
-            container.appendChild(card);
-        });
+            </div>
+        `;
+        
+        console.log('Devocional cargado exitosamente');
+        
     } catch (error) {
         console.error('Error loading devocionales:', error);
-        container.innerHTML = '<p style="text-align: center; color: red;">Error al cargar devocionales</p>';
+        const devocionalesContainer = document.getElementById('devocionalesContainer');
+        if (devocionalesContainer) {
+            devocionalesContainer.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: var(--color-danger);">
+                    <p>❌ Error al cargar el devocional</p>
+                </div>
+            `;
+        }
     }
 }
+
 
 
