@@ -45,6 +45,7 @@
             <div class="tabs">
                 <button class="tab active" data-tab="noticias">📰 Noticias</button>
                 <button class="tab" data-tab="predicas">🎤 Prédicas</button>
+                   <button class="tab" data-tab="devocionales">📖 Devocionales</button>
             </div>
 
             <!-- ========== NOTICIAS TAB ========== -->
@@ -78,8 +79,22 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+
+                <!-- ========== DEVOCIONALES TAB ========== -->
+            <div class="tab-content" id="devocionales">
+                <div class="card">
+                    <div class="card-title">
+                    <span>Gestión de Devocionales</span>
+                    <button class="btn-add" id="addDevocionalBtn">➕ Nuevo Devocional</button>
+                </div>
+                <div class="items-list" id="devocionalesList">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📭</div>
+                                <p>No hay devocionales publicados</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
     <!-- ========== MODAL NOTICIA ========== -->
     <div class="modal" id="noticiaModal">
@@ -151,6 +166,47 @@
             </form>
         </div>
     </div>
+
+    <!-- ========== MODAL DEVOCIONAL ========== -->
+<div class="modal" id="devocionalModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="devocionalModalTitle">Nuevo Devocional</h2>
+            <button class="btn-close" id="closeDevocionalModal">&times;</button>
+        </div>
+        <form id="devocionalForm">
+            <input type="hidden" id="devocionalId">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Fecha</label>
+                    <input type="date" class="form-input" id="devocionalFecha" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Autor</label>
+                    <input type="text" class="form-input" id="devocionalAutor" placeholder="Pastor Damian" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Versículo</label>
+                <input type="text" class="form-input" id="devocionalVersiculo" placeholder="Juan 3:16" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Texto del Versículo</label>
+                <textarea class="form-textarea" id="devocionalTextoVersiculo" placeholder="Porque de tal manera amó Dios al mundo..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Reflexión</label>
+                <textarea class="form-textarea" id="devocionalReflexion" placeholder="Hoy reflexionamos sobre..." required style="min-height: 150px;"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Oración</label>
+                <textarea class="form-textarea" id="devocionalOracion" placeholder="Padre celestial, te pedimos..." required></textarea>
+            </div>
+            <button type="submit" class="btn-submit">Guardar Devocional</button>
+        </form>
+    </div>
+</div>
+
 
     <script type="module" src="js/admin.js"></script>
 </body>

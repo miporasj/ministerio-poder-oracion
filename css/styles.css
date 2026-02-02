@@ -564,7 +564,7 @@
 
 @media (max-width: 768px) {
     .predicas-grid {
-        grid-template-columns: repeat(2, 1fr);  /* 1 en móviles */
+        grid-template-columns: repeat(1, 1fr);  /* 1 en móviles */
     }
 }
 
