@@ -4,7 +4,8 @@ import {
     collection, 
     getDocs, 
     query, 
-    orderBy 
+    orderBy,
+    limit
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // ========== NAVBAR ========== 
@@ -331,6 +332,3 @@ async function loadDevocionales() {
         }
     }
 }
-
-
-
