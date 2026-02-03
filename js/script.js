@@ -133,9 +133,19 @@ async function cargarNoticias() {
         grid.innerHTML = '';
         querySnapshot.forEach((doc) => {
             const n = doc.data();
+            
+            // HTML de la imagen si existe
+            const imageHTML = n.imageUrl ? `
+                <img src="${n.imageUrl}" 
+                     alt="${n.titulo}" 
+                     style="width: 100%; height: 200px; object-fit: cover; border-radius: 12px; margin-bottom: 1rem;"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div style="font-size: 3rem; margin-bottom: 1rem; display: none;">${n.icon}</div>
+            ` : `<div style="font-size: 3rem; margin-bottom: 1rem;">${n.icon}</div>`;
+            
             grid.innerHTML += `
                 <div class="noticia-card" style="position: relative; z-index: 2;">
-                    <div style="font-size: 3rem; margin-bottom: 1rem;">${n.icon}</div>
+                    ${imageHTML}
                     <p style="color: var(--color-primary); font-weight: 600; font-size: 0.85rem; margin-bottom: 0.5rem;">${n.fecha}</p>
                     <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--color-text-dark); margin-bottom: 0.75rem;">${n.titulo}</h3>
                     <p style="color: var(--color-text-light); line-height: 1.6;">${n.descripcion}</p>
@@ -146,14 +156,9 @@ async function cargarNoticias() {
         document.querySelectorAll('.noticia-card').forEach(card => observer.observe(card));
     } catch (error) {
         console.error('Error al cargar noticias:', error);
-        grid.innerHTML = `
-            <div style="text-align: center; padding: 3rem; color: var(--color-danger);">
-                <div style="font-size: 4rem; margin-bottom: 1rem;">⚠️</div>
-                <p>Error al cargar las noticias. Intenta recargar la página.</p>
-            </div>
-        `;
     }
 }
+
 
 // ========== CARGAR PRÉDICAS DESDE FIREBASE ========== 
 async function cargarPredicas() {

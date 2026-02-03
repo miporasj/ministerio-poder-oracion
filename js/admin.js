@@ -192,29 +192,39 @@ async function cargarNoticias() {
     }
 }
 
-noticiaForm.addEventListener('submit', async (e) => {
+noticiaForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    const noticiaId = document.getElementById('noticiaId').value;
-    const noticia = {
-        titulo: document.getElementById('noticiaTitulo').value,
-        descripcion: document.getElementById('noticiaDescripcion').value,
-        fecha: document.getElementById('noticiaFecha').value,
-        icon: document.getElementById('noticiaIcon').value
-    };
+    const id = document.getElementById('noticiaId').value;
+    const imageUrl = document.getElementById('noticiaImageUrl').value;
     
     try {
-        if (noticiaId) {
-            await updateDoc(doc(db, 'noticias', noticiaId), noticia);
+        const noticiaData = {
+            fecha: document.getElementById('noticiaFecha').value,
+            icon: document.getElementById('noticiaIcon').value,
+            titulo: document.getElementById('noticiaTitulo').value,
+            descripcion: document.getElementById('noticiaDescripcion').value,
+            imageUrl: convertGoogleDriveUrl(imageUrl)  // Convertir URL
+        };
+        
+        if (id) {
+            // Editar noticia existente
+            await updateDoc(doc(db, 'noticias', id), noticiaData);
+            alert('✅ Noticia actualizada exitosamente');
         } else {
-            await addDoc(collection(db, 'noticias'), noticia);
+            // Crear nueva noticia
+            await addDoc(collection(db, 'noticias'), noticiaData);
+            alert('✅ Noticia creada exitosamente');
         }
         
         noticiaModal.classList.remove('active');
-        cargarNoticias();
+        noticiaForm.reset();
+        noticiaImagenPreview.style.display = 'none';
+        loadNoticias();
+        
     } catch (error) {
-        console.error('Error al guardar noticia:', error);
-        alert('Error al guardar la noticia');
+        console.error('Error saving noticia:', error);
+        alert('❌ Error al guardar la noticia');
     }
 });
 
@@ -467,3 +477,43 @@ window.deleteDevocional = async (id) => {
         }
     }
 };
+
+// ========== FUNCIÓN PARA CONVERTIR URL DE GOOGLE DRIVE ==========
+function convertGoogleDriveUrl(url) {
+    if (!url) return '';
+    
+    // Si es un enlace de compartir: https://drive.google.com/file/d/FILE_ID/view
+    const shareMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+    if (shareMatch) {
+        return `https://drive.google.com/thumbnail?id=${shareMatch[1]}&sz=w800`;
+    }
+    
+    // Si ya es un thumbnail directo
+    if (url.includes('drive.google.com/thumbnail')) {
+        return url;
+    }
+    
+    // Si es solo el ID
+    if (/^[a-zA-Z0-9_-]+$/.test(url)) {
+        return `https://drive.google.com/thumbnail?id=${url}&sz=w800`;
+    }
+    
+    return url;
+}
+
+// Preview de imagen al escribir URL
+const noticiaImageUrlInput = document.getElementById('noticiaImageUrl');
+const noticiaImagenPreview = document.getElementById('noticiaImagenPreview');
+const noticiaImagenPreviewImg = document.getElementById('noticiaImagenPreviewImg');
+
+noticiaImageUrlInput?.addEventListener('input', (e) => {
+    const url = e.target.value;
+    if (url) {
+        const convertedUrl = convertGoogleDriveUrl(url);
+        noticiaImagenPreviewImg.src = convertedUrl;
+        noticiaImagenPreview.style.display = 'block';
+    } else {
+        noticiaImagenPreview.style.display = 'none';
+    }
+});
+

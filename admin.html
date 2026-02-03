@@ -96,37 +96,51 @@
                 </div>
             </div>
 
-    <!-- ========== MODAL NOTICIA ========== -->
-    <div class="modal" id="noticiaModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title" id="noticiaModalTitle">Nueva Noticia</h2>
-                <button class="btn-close" id="closeNoticiaModal">&times;</button>
-            </div>
-            <form id="noticiaForm">
-                <input type="hidden" id="noticiaId">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Fecha</label>
-                        <input type="text" class="form-input" id="noticiaFecha" placeholder="28 de Enero, 2026" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Emoji/Ícono</label>
-                        <input type="text" class="form-input" id="noticiaIcon" placeholder="📢" required>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Título</label>
-                    <input type="text" class="form-input" id="noticiaTitulo" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Descripción</label>
-                    <textarea class="form-textarea" id="noticiaDescripcion" required></textarea>
-                </div>
-                <button type="submit" class="btn-submit">Guardar Noticia</button>
-            </form>
+<!-- ========== MODAL NOTICIA ========== -->
+<div class="modal" id="noticiaModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="noticiaModalTitle">Nueva Noticia</h2>
+            <button class="btn-close" id="closeNoticiaModal">&times;</button>
         </div>
+        <form id="noticiaForm">
+            <input type="hidden" id="noticiaId">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Fecha</label>
+                    <input type="text" class="form-input" id="noticiaFecha" placeholder="28 de Enero, 2026" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Emoji/Ícono</label>
+                    <input type="text" class="form-input" id="noticiaIcon" placeholder="📢" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Título</label>
+                <input type="text" class="form-input" id="noticiaTitulo" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">URL de Imagen (Google Drive) - Opcional</label>
+                <input type="url" class="form-input" id="noticiaImageUrl" placeholder="https://drive.google.com/file/d/... o solo el ID">
+                <small style="color: var(--color-text-light); font-size: 0.85rem; display: block; margin-top: 0.5rem;">
+                    📌 <strong>Cómo obtener el enlace:</strong><br>
+                    1. Subí la imagen a Google Drive<br>
+                    2. Click derecho → Obtener enlace → "Cualquiera con el enlace"<br>
+                    3. Copiá el enlace completo o solo el ID del archivo
+                </small>
+                <div id="noticiaImagenPreview" style="margin-top: 1rem; display: none;">
+                    <img id="noticiaImagenPreviewImg" style="max-width: 100%; height: auto; border-radius: 10px; max-height: 200px; object-fit: cover; border: 2px solid #e0e0e0;">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Descripción</label>
+                <textarea class="form-textarea" id="noticiaDescripcion" required></textarea>
+            </div>
+            <button type="submit" class="btn-submit">Guardar Noticia</button>
+        </form>
     </div>
+</div>
+
 
     <!-- ========== MODAL PRÉDICA ========== -->
     <div class="modal" id="predicaModal">
@@ -206,7 +220,6 @@
         </form>
     </div>
 </div>
-
 
     <script type="module" src="js/admin.js"></script>
 </body>
