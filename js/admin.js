@@ -14,6 +14,30 @@ function extractYouTubeID(url) {
 }
 
 
+// ========== FUNCIÓN PARA CONVERTIR URL DE GOOGLE DRIVE ==========
+function convertGoogleDriveUrl(url) {
+    if (!url) return '';
+    
+    // Si es un enlace de compartir: https://drive.google.com/file/d/FILE_ID/view
+    const shareMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+    if (shareMatch) {
+        return `https://drive.google.com/thumbnail?id=${shareMatch[1]}&sz=w800`;
+    }
+    
+    // Si ya es un thumbnail directo
+    if (url.includes('drive.google.com/thumbnail')) {
+        return url;
+    }
+    
+    // Si es solo el ID
+    if (/^[a-zA-Z0-9_-]+$/.test(url)) {
+        return `https://drive.google.com/thumbnail?id=${url}&sz=w800`;
+    }
+    
+    return url;
+}
+
+
 // ========== IMPORTAR FIREBASE ==========
 import { auth, db } from './firebase-config.js';
 import { 
@@ -33,6 +57,7 @@ import {
     orderBy 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+
 // ========== ELEMENTOS DEL DOM ==========
 const loginScreen = document.getElementById('loginScreen');
 const dashboard = document.getElementById('dashboard');
@@ -41,14 +66,17 @@ const loginError = document.getElementById('loginError');
 const logoutBtn = document.getElementById('logoutBtn');
 const userEmail = document.getElementById('userEmail');
 
+
 // Tabs
 const tabs = document.querySelectorAll('.tab');
 const tabContents = document.querySelectorAll('.tab-content');
+
 
 // Modales
 const noticiaModal = document.getElementById('noticiaModal');
 const predicaModal = document.getElementById('predicaModal');
 const devocionalModal = document.getElementById('devocionalModal');
+
 
 // Botones
 const addNoticiaBtn = document.getElementById('addNoticiaBtn');
@@ -58,14 +86,22 @@ const closeNoticiaModal = document.getElementById('closeNoticiaModal');
 const closePredicaModal = document.getElementById('closePredicaModal');
 const closeDevocionalModal = document.getElementById('closeDevocionalModal');
 
+
 // Formularios
 const noticiaForm = document.getElementById('noticiaForm');
 const predicaForm = document.getElementById('predicaForm');
 const devocionalForm = document.getElementById('devocionalForm');
+
 // Listas
 const noticiasList = document.getElementById('noticiasList');
 const predicasList = document.getElementById('predicasList');
 const devocionalesList = document.getElementById('devocionalesList');
+
+// Preview de imagen
+const noticiaImageUrlInput = document.getElementById('noticiaImageUrl');
+const noticiaImagenPreview = document.getElementById('noticiaImagenPreview');
+const noticiaImagenPreviewImg = document.getElementById('noticiaImagenPreviewImg');
+
 
 // ========== AUTENTICACIÓN ==========
 onAuthStateChanged(auth, (user) => {
@@ -82,10 +118,12 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
+
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
+
 
     try {
         await signInWithEmailAndPassword(auth, email, password);
@@ -96,9 +134,11 @@ loginForm.addEventListener('submit', async (e) => {
     }
 });
 
+
 logoutBtn.addEventListener('click', async () => {
     await signOut(auth);
 });
+
 
 // ========== TABS ==========
 tabs.forEach(tab => {
@@ -117,13 +157,16 @@ tabs.forEach(tab => {
     });
 });
 
+
 // ========== MODALES ==========
 addNoticiaBtn.addEventListener('click', () => {
     document.getElementById('noticiaModalTitle').textContent = 'Nueva Noticia';
     noticiaForm.reset();
     document.getElementById('noticiaId').value = '';
+    noticiaImagenPreview.style.display = 'none';
     noticiaModal.classList.add('active');
 });
+
 
 addPredicaBtn.addEventListener('click', () => {
     document.getElementById('predicaModalTitle').textContent = 'Nueva Prédica';
@@ -132,13 +175,16 @@ addPredicaBtn.addEventListener('click', () => {
     predicaModal.classList.add('active');
 });
 
+
 closeNoticiaModal.addEventListener('click', () => {
     noticiaModal.classList.remove('active');
 });
 
+
 closePredicaModal.addEventListener('click', () => {
     predicaModal.classList.remove('active');
 });
+
 
 // Cerrar modal al hacer click fuera
 noticiaModal.addEventListener('click', (e) => {
@@ -147,11 +193,31 @@ noticiaModal.addEventListener('click', (e) => {
     }
 });
 
+
 predicaModal.addEventListener('click', (e) => {
     if (e.target === predicaModal) {
         predicaModal.classList.remove('active');
     }
 });
+
+
+// ========== PREVIEW DE IMAGEN ==========
+noticiaImageUrlInput?.addEventListener('input', (e) => {
+    const url = e.target.value.trim();
+    if (url) {
+        const convertedUrl = convertGoogleDriveUrl(url);
+        noticiaImagenPreviewImg.src = convertedUrl;
+        noticiaImagenPreview.style.display = 'block';
+        
+        // Ocultar preview si la imagen falla al cargar
+        noticiaImagenPreviewImg.onerror = () => {
+            noticiaImagenPreview.style.display = 'none';
+        };
+    } else {
+        noticiaImagenPreview.style.display = 'none';
+    }
+});
+
 
 // ========== NOTICIAS CRUD ==========
 async function cargarNoticias() {
@@ -172,13 +238,23 @@ async function cargarNoticias() {
         noticiasList.innerHTML = '';
         querySnapshot.forEach((doc) => {
             const noticia = doc.data();
+            
+            // Preview de imagen en la lista
+            const imagePreview = noticia.imageUrl ? `
+                <img src="${noticia.imageUrl}" 
+                     alt="${noticia.titulo}" 
+                     style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; margin-right: 1rem;">
+            ` : `<div class="item-icon">${noticia.icon}</div>`;
+            
             noticiasList.innerHTML += `
                 <div class="item">
-                    <div class="item-content">
-                        <div class="item-icon">${noticia.icon}</div>
-                        <div class="item-date">${noticia.fecha}</div>
-                        <h3 class="item-title">${noticia.titulo}</h3>
-                        <p class="item-description">${noticia.descripcion}</p>
+                    <div class="item-content" style="display: flex; align-items: center;">
+                        ${imagePreview}
+                        <div>
+                            <div class="item-date">${noticia.fecha}</div>
+                            <h3 class="item-title">${noticia.titulo}</h3>
+                            <p class="item-description">${noticia.descripcion}</p>
+                        </div>
                     </div>
                     <div class="item-actions">
                         <button class="btn-edit" onclick="editarNoticia('${doc.id}', ${JSON.stringify(noticia).replace(/"/g, '&quot;')})">✏️ Editar</button>
@@ -192,11 +268,12 @@ async function cargarNoticias() {
     }
 }
 
+
 noticiaForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
     const id = document.getElementById('noticiaId').value;
-    const imageUrl = document.getElementById('noticiaImageUrl').value;
+    const imageUrl = document.getElementById('noticiaImageUrl').value.trim();
     
     try {
         const noticiaData = {
@@ -204,15 +281,13 @@ noticiaForm?.addEventListener('submit', async (e) => {
             icon: document.getElementById('noticiaIcon').value,
             titulo: document.getElementById('noticiaTitulo').value,
             descripcion: document.getElementById('noticiaDescripcion').value,
-            imageUrl: convertGoogleDriveUrl(imageUrl)  // Convertir URL
+            imageUrl: convertGoogleDriveUrl(imageUrl)
         };
         
         if (id) {
-            // Editar noticia existente
             await updateDoc(doc(db, 'noticias', id), noticiaData);
             alert('✅ Noticia actualizada exitosamente');
         } else {
-            // Crear nueva noticia
             await addDoc(collection(db, 'noticias'), noticiaData);
             alert('✅ Noticia creada exitosamente');
         }
@@ -220,13 +295,14 @@ noticiaForm?.addEventListener('submit', async (e) => {
         noticiaModal.classList.remove('active');
         noticiaForm.reset();
         noticiaImagenPreview.style.display = 'none';
-        loadNoticias();
+        cargarNoticias();  // ✅ CORREGIDO: era loadNoticias()
         
     } catch (error) {
         console.error('Error saving noticia:', error);
-        alert('❌ Error al guardar la noticia');
+        alert('❌ Error al guardar la noticia: ' + error.message);
     }
 });
+
 
 window.editarNoticia = (id, noticia) => {
     document.getElementById('noticiaId').value = id;
@@ -234,21 +310,32 @@ window.editarNoticia = (id, noticia) => {
     document.getElementById('noticiaDescripcion').value = noticia.descripcion;
     document.getElementById('noticiaFecha').value = noticia.fecha;
     document.getElementById('noticiaIcon').value = noticia.icon;
+    document.getElementById('noticiaImageUrl').value = noticia.imageUrl || '';
+    
+    // Mostrar preview si hay imagen
+    if (noticia.imageUrl) {
+        noticiaImagenPreviewImg.src = noticia.imageUrl;
+        noticiaImagenPreview.style.display = 'block';
+    }
+    
     document.getElementById('noticiaModalTitle').textContent = 'Editar Noticia';
     noticiaModal.classList.add('active');
 };
+
 
 window.eliminarNoticia = async (id) => {
     if (confirm('¿Estás seguro de eliminar esta noticia?')) {
         try {
             await deleteDoc(doc(db, 'noticias', id));
+            alert('✅ Noticia eliminada');
             cargarNoticias();
         } catch (error) {
             console.error('Error al eliminar noticia:', error);
-            alert('Error al eliminar la noticia');
+            alert('❌ Error al eliminar la noticia');
         }
     }
 };
+
 
 // ========== PRÉDICAS CRUD ==========
 async function cargarPredicas() {
@@ -270,7 +357,6 @@ async function cargarPredicas() {
         querySnapshot.forEach((doc) => {
             const p = doc.data();
             
-            // Construir HTML del video si existe
             const videoHTML = p.videoId ? `
                 <div style="margin-top: 1rem;">
                     <a href="https://www.youtube.com/watch?v=${p.videoId}" 
@@ -303,6 +389,7 @@ async function cargarPredicas() {
     }
 }
 
+
 predicaForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -318,17 +405,20 @@ predicaForm.addEventListener('submit', async (e) => {
     try {
         if (predicaId) {
             await updateDoc(doc(db, 'predicas', predicaId), predica);
+            alert('✅ Prédica actualizada');
         } else {
             await addDoc(collection(db, 'predicas'), predica);
+            alert('✅ Prédica creada');
         }
         
         predicaModal.classList.remove('active');
         cargarPredicas();
     } catch (error) {
         console.error('Error al guardar prédica:', error);
-        alert('Error al guardar la prédica');
+        alert('❌ Error al guardar la prédica');
     }
 });
+
 
 window.editarPredica = (id, predica) => {
     document.getElementById('predicaId').value = id;
@@ -341,19 +431,22 @@ window.editarPredica = (id, predica) => {
     predicaModal.classList.add('active');
 };
 
+
 window.eliminarPredica = async (id) => {
     if (confirm('¿Estás seguro de eliminar esta prédica?')) {
         try {
             await deleteDoc(doc(db, 'predicas', id));
+            alert('✅ Prédica eliminada');
             cargarPredicas();
         } catch (error) {
             console.error('Error al eliminar prédica:', error);
-            alert('Error al eliminar la prédica');
+            alert('❌ Error al eliminar la prédica');
         }
     }
 };
 
-// Abrir modal para nuevo devocional
+
+// ========== DEVOCIONALES CRUD ==========
 addDevocionalBtn?.addEventListener('click', () => {
     devocionalForm.reset();
     document.getElementById('devocionalId').value = '';
@@ -361,19 +454,19 @@ addDevocionalBtn?.addEventListener('click', () => {
     devocionalModal.classList.add('active');
 });
 
-// Cerrar modal
+
 closeDevocionalModal?.addEventListener('click', () => {
     devocionalModal.classList.remove('active');
 });
 
-// Cerrar modal al hacer click fuera
+
 devocionalModal?.addEventListener('click', (e) => {
     if (e.target === devocionalModal) {
         devocionalModal.classList.remove('active');
     }
 });
 
-// Cargar devocionales
+
 async function loadDevocionales() {
     try {
         const q = query(collection(db, 'devocionales'), orderBy('fecha', 'desc'));
@@ -414,7 +507,7 @@ async function loadDevocionales() {
     }
 }
 
-// Guardar devocional
+
 devocionalForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -432,8 +525,10 @@ devocionalForm?.addEventListener('submit', async (e) => {
     try {
         if (devocionalId) {
             await updateDoc(doc(db, 'devocionales', devocionalId), devocionalData);
+            alert('✅ Devocional actualizado');
         } else {
             await addDoc(collection(db, 'devocionales'), devocionalData);
+            alert('✅ Devocional creado');
         }
         
         devocionalModal.classList.remove('active');
@@ -441,11 +536,11 @@ devocionalForm?.addEventListener('submit', async (e) => {
         loadDevocionales();
     } catch (error) {
         console.error('Error saving devocional:', error);
-        alert('Error al guardar el devocional');
+        alert('❌ Error al guardar el devocional');
     }
 });
 
-// Editar devocional
+
 window.editDevocional = async (id) => {
     try {
         const docSnap = await getDoc(doc(db, 'devocionales', id));
@@ -466,54 +561,16 @@ window.editDevocional = async (id) => {
     }
 };
 
-// Eliminar devocional
+
 window.deleteDevocional = async (id) => {
     if (confirm('¿Estás seguro de eliminar este devocional?')) {
         try {
             await deleteDoc(doc(db, 'devocionales', id));
+            alert('✅ Devocional eliminado');
             loadDevocionales();
         } catch (error) {
             console.error('Error deleting devocional:', error);
+            alert('❌ Error al eliminar');
         }
     }
 };
-
-// ========== FUNCIÓN PARA CONVERTIR URL DE GOOGLE DRIVE ==========
-function convertGoogleDriveUrl(url) {
-    if (!url) return '';
-    
-    // Si es un enlace de compartir: https://drive.google.com/file/d/FILE_ID/view
-    const shareMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-    if (shareMatch) {
-        return `https://drive.google.com/thumbnail?id=${shareMatch[1]}&sz=w800`;
-    }
-    
-    // Si ya es un thumbnail directo
-    if (url.includes('drive.google.com/thumbnail')) {
-        return url;
-    }
-    
-    // Si es solo el ID
-    if (/^[a-zA-Z0-9_-]+$/.test(url)) {
-        return `https://drive.google.com/thumbnail?id=${url}&sz=w800`;
-    }
-    
-    return url;
-}
-
-// Preview de imagen al escribir URL
-const noticiaImageUrlInput = document.getElementById('noticiaImageUrl');
-const noticiaImagenPreview = document.getElementById('noticiaImagenPreview');
-const noticiaImagenPreviewImg = document.getElementById('noticiaImagenPreviewImg');
-
-noticiaImageUrlInput?.addEventListener('input', (e) => {
-    const url = e.target.value;
-    if (url) {
-        const convertedUrl = convertGoogleDriveUrl(url);
-        noticiaImagenPreviewImg.src = convertedUrl;
-        noticiaImagenPreview.style.display = 'block';
-    } else {
-        noticiaImagenPreview.style.display = 'none';
-    }
-});
-
